@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0077cc">
+  <meta name="description" content="Вибір тарифу — локальне керування тарифами та меню">
+  <title>Вибір тарифу</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+</head>
+<body>
+  <header class="app-header">
+    <h1 id="app-title">Вибір тарифу</h1>
+    <div class="header-actions">
+      <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
+        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+        <span>Редагувати</span>
+      </button>
+      <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        <span>Зберегти</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="edit-banner" class="edit-banner" hidden>
+      <strong>Режим редагування</strong>
+      <span>Натисніть на елемент, щоб змінити його, або відкрийте налаштування.</span>
+      <button id="open-editor-button" class="toolbar-button" type="button">
+        <i class="fa-solid fa-sliders" aria-hidden="true"></i> Налаштування
+      </button>
+    </div>
+
+    <div id="reset-container">
+      <button id="reset-button" aria-label="Скинути вибір" type="button">Назад</button>
+    </div>
+
+    <section id="menu-buttons" aria-label="Головне меню"></section>
+    <section id="sub-options" aria-label="Підменю"></section>
+    <section id="output" aria-label="Деталі"></section>
+  </main>
+
+  <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title">
+    <div class="dialog-header">
+      <h2 id="editor-title">Налаштування</h2>
+      <button id="close-editor-button" class="icon-only-button" type="button" aria-label="Закрити">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="editor-layout">
+      <nav class="editor-nav" aria-label="Розділи редагування">
+        <button type="button" class="editor-nav-button active" data-editor-tab="content">Меню та дані</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="fields">Назви полів</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="appearance">Назва та вигляд</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="backup">Резервна копія</button>
+      </nav>
+      <div class="editor-content">
+        <section class="editor-tab" data-editor-panel="content">
+          <div class="editor-section-heading">
+            <h3>Категорії</h3>
+            <button id="add-category-button" class="action-button" type="button"><i class="fa-solid fa-plus"></i> Додати категорію</button>
+          </div>
+          <div id="category-editor-list" class="editor-list"></div>
+          <hr>
+          <div class="editor-section-heading">
+            <h3>Вибрана категорія / підопція</h3>
+          </div>
+          <p class="helper-text">Виберіть категорію, щоб редагувати дані, підопції, підписи та зображення.</p>
+          <div id="item-editor"></div>
+        </section>
+
+        <section class="editor-tab" data-editor-panel="fields" hidden>
+          <h3>Редагування назв полів</h3>
+          <p class="helper-text">Назви полів відображаються в деталях. Наявні значення залишаться без змін.</p>
+          <div id="field-editor-list" class="form-grid"></div>
+        </section>
+
+        <section class="editor-tab" data-editor-panel="appearance" hidden>
+          <h3>Назва програми</h3>
+          <label class="form-field">Назва
+            <input id="app-title-input" type="text" maxlength="100">
+          </label>
+          <h3>Оформлення</h3>
+          <label class="form-field">Основний колір
+            <input id="primary-color-input" type="color" value="#005fa3">
+          </label>
+          <p class="helper-text">Кольори зберігаються на цьому пристрої.</p>
+        </section>
+
+        <section class="editor-tab" data-editor-panel="backup" hidden>
+          <h3>Резервне копіювання даних</h3>
+          <p class="helper-text">Експортуйте категорії, тексти та налаштування у файл JSON. Зображення також додаються до резервної копії, якщо це дозволяє її розмір.</p>
+          <div class="button-row">
+            <button id="export-button" class="action-button" type="button"><i class="fa-solid fa-download"></i> Експортувати</button>
+            <button id="import-button" class="action-button" type="button"><i class="fa-solid fa-upload"></i> Імпортувати JSON</button>
+            <input id="import-file-input" type="file" accept="application/json,.json" hidden>
+          </div>
+          <button id="restore-defaults-button" class="danger-button" type="button">Відновити початкові налаштування</button>
+          <p class="warning-text">Увага: відновлення замінить усі дані, які ви редагували на цьому пристрої.</p>
+        </section>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <span id="save-status" role="status" aria-live="polite">Зміни зберігаються на пристрої.</span>
+      <button id="done-editor-button" class="toolbar-button primary-toolbar-button" type="button">Готово</button>
+    </div>
+  </dialog>
+
+  <input id="image-file-input" type="file" accept="image/*" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .catch(err => console.error('Service Worker registration failed', err));
+      });
+    }
+  </script>
+</body>
+</html>
