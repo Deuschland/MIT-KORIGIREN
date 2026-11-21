@@ -206,6 +206,13 @@ hr { border: 0; border-top: 1px solid #e1e6e9; margin: 22px 0; }
   .label, .value { flex-basis: 50%; }
 }
 
+/* Відступ знизу для кнопок "Редагувати" / "Зберегти", щоб їх не перекривала кнопка "Назад" */
+main .header-actions {
+  justify-content: center;
+  margin: 20px auto 90px;
+  max-width: 1000px;
+}
+
 /* Lokale, offlinefähige Symbol-Fallbacks für die verwendeten Icon-Klassen. */
 .fa-solid::before { display: inline-block; font-family: system-ui, sans-serif; font-style: normal; font-weight: 700; }
 .fa-hospital::before, .fa-clinic-medical::before, .fa-hospital-user::before { content: "🏥"; }
