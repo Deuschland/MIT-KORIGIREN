@@ -11,19 +11,7 @@
   <link rel="icon" href="icon-192.png" type="image/png">
 </head>
 <body>
-  <header class="app-header">
-    <h1 id="app-title">Вибір тарифу</h1>
-    <div class="header-actions">
-      <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
-        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-        <span>Редагувати</span>
-      </button>
-      <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
-        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-        <span>Зберегти</span>
-      </button>
-    </div>
-  </header>
+  <h1 id="app-title" hidden>Вибір тарифу</h1>
 
   <main>
     <div id="edit-banner" class="edit-banner" hidden>
@@ -41,6 +29,17 @@
     <section id="menu-buttons" aria-label="Головне меню"></section>
     <section id="sub-options" aria-label="Підменю"></section>
     <section id="output" aria-label="Деталі"></section>
+
+    <div class="header-actions" style="display: flex; justify-content: center; margin-top: 24px; margin-bottom: 16px;">
+      <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
+        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+        <span>Редагувати</span>
+      </button>
+      <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        <span>Зберегти</span>
+      </button>
+    </div>
   </main>
 
   <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title">
