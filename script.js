@@ -51,7 +51,7 @@ function renderSubSelection(option,baseData){subOptions.textContent='';subOption
 function resetView(){clearContainers();currentCategory=null;resetContainer.style.display='none';Object.entries(config.categories).forEach(([name,cat])=>menuContainer.appendChild(createButton(name,cat.icon,()=>renderView(name),'',cat.image)));}
 function refreshCurrent(){if(currentCategory && config.categories[currentCategory])renderView(currentCategory);else resetView();}
 resetBtn.addEventListener('click',resetView);
-function updateTitle(){document.title=config.title;appTitle.textContent=config.title;resetBtn.textContent=config.resetLabel;editBtn.textContent=editor.classList.contains('open')?'Закрити редактор':'Редагувати';}
+function updateTitle(){document.title=config.title;appTitle.textContent=config.title;resetBtn.textContent=config.resetLabel;editBtn.textContent=editor.classList.contains('open')?'Закрити редактор':config.editLabel;}
 function inputRow(label,value,attrs=''){return `<label class="editor-field"><span>${esc(label)}</span><input ${attrs} value="${esc(value)}"></label>`;}
 function renderEditor(){
   const names=Object.keys(config.categories);if(!editorCategory||!config.categories[editorCategory])editorCategory=names[0]||'';
