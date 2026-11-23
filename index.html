@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0077cc">
-  <meta name="description" content="Вибір тарифу — локальне керування тарифами та меню">
-  <title>Вибір тарифу</title>
+  <meta name="description" content="Tarif Auswahl – lokal gespeicherte Tarif- und Menüverwaltung">
+  <title>Tarif Auswahl</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-192.png" type="image/png">
 </head>
 <body>
-  <h1 id="app-title" hidden>Вибір тарифу</h1>
+  <header class="app-header">
+    <h1 id="app-title">Tarif Auswahl</h1>
+  </header>
 
   <main>
     <div id="edit-banner" class="edit-banner" hidden>
@@ -23,24 +25,24 @@
     </div>
 
     <div id="reset-container">
-      <button id="reset-button" aria-label="Скинути вибір" type="button">Назад</button>
+      <button id="reset-button" aria-label="Auswahl zurücksetzen" type="button">Zurück</button>
     </div>
 
-    <section id="menu-buttons" aria-label="Головне меню"></section>
-    <section id="sub-options" aria-label="Підменю"></section>
-    <section id="output" aria-label="Деталі"></section>
-
-    <div class="header-actions" style="display: flex; justify-content: center; margin-top: 24px; margin-bottom: 16px;">
-      <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
-        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-        <span>Редагувати</span>
-      </button>
-      <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
-        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-        <span>Зберегти</span>
-      </button>
-    </div>
+    <section id="menu-buttons" aria-label="Hauptmenü"></section>
+    <section id="sub-options" aria-label="Untermenü"></section>
+    <section id="output" aria-label="Details"></section>
   </main>
+
+  <div id="edit-controls" class="edit-controls" aria-label="Керування редагуванням">
+    <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
+      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+      <span>Редагувати</span>
+    </button>
+    <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
+      <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+      <span>Зберегти</span>
+    </button>
+  </div>
 
   <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title">
     <div class="dialog-header">
@@ -97,7 +99,7 @@
             <button id="import-button" class="action-button" type="button"><i class="fa-solid fa-upload"></i> Імпортувати JSON</button>
             <input id="import-file-input" type="file" accept="application/json,.json" hidden>
           </div>
-          <button id="restore-defaults-button" class="danger-button" type="button">Відновити початкові налаштування</button>
+          <button id="restore-defaults-button" class="danger-button" type="button"> Відновити початкові налаштування</button>
           <p class="warning-text">Увага: відновлення замінить усі дані, які ви редагували на цьому пристрої.</p>
         </section>
       </div>

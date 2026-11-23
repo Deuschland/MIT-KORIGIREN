@@ -134,27 +134,13 @@ let editorCategory = null;
 let currentImageTarget = null;
 let toastTimer = null;
 
-const FIELD_LABELS_UK = {
-  'Name': "Ім'я",
-  'Kostenträger-Nr.': 'Номер платника',
-  'Kostenträger - Name / Ort': 'Платник — назва / місце',
-  'Von Objekt / Ort': 'Звідки — об’єкт / місце',
-  'Nach Objekt / Ort': 'Куди — об’єкт / місце',
-  'Zusatzfeld': 'Додаткове поле',
-  'Tarif': 'Тариф',
-  'Statistik': 'Статистика',
-  'Zusatztext für Rechnung': 'Додатковий текст для рахунку'
-};
-function fieldDisplayName(field) { return FIELD_LABELS_UK[field] || field; }
-
 function deepClone(value) { return JSON.parse(JSON.stringify(value)); }
 function defaultConfig() {
-  return { title: 'Вибір тарифу', fields: [...DEFAULT_FIELDS], categories: deepClone(DEFAULT_CATEGORIES), primaryColor: '#005fa3' };
+  return { title: 'Tarif Auswahl', fields: [...DEFAULT_FIELDS], categories: deepClone(DEFAULT_CATEGORIES), primaryColor: '#005fa3' };
 }
 function normaliseConfig(input) {
   const result = input && typeof input === 'object' ? input : defaultConfig();
-  result.title = typeof result.title === 'string' ? result.title : 'Вибір тарифу';
-  if (result.title === 'Tarif Auswahl') result.title = 'Вибір тарифу';
+  result.title = typeof result.title === 'string' ? result.title : 'Tarif Auswahl';
   result.fields = Array.isArray(result.fields) && result.fields.length ? result.fields.map(String) : [...DEFAULT_FIELDS];
   result.categories = result.categories && typeof result.categories === 'object' ? result.categories : deepClone(DEFAULT_CATEGORIES);
   result.primaryColor = /^#[0-9a-f]{6}$/i.test(result.primaryColor || '') ? result.primaryColor : '#005fa3';
@@ -178,7 +164,7 @@ function loadConfig() {
     const saved = localStorage.getItem(STORAGE_KEY);
     return normaliseConfig(saved ? JSON.parse(saved) : defaultConfig());
   } catch (error) {
-    console.error('Не вдалося завантажити налаштування:', error);
+    console.error('Konfiguration konnte nicht geladen werden:', error);
     return defaultConfig();
   }
 }
@@ -186,11 +172,11 @@ function saveConfig(showMessage = true) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
     if (showMessage) showToast('Зміни збережено на пристрої.');
-    $('save-status').textContent = 'Останнє збереження: ' + new Date().toLocaleTimeString('de-DE');
+    $('save-status').textContent = 'Останнє збереження: ' + new Date().toLocaleTimeString('uk-UA');
     return true;
   } catch (error) {
     console.error(error);
-    showToast('Недостатньо місця. Зменште розмір великих зображень або експортуйте дані.');
+    showToast('Недостатньо місця. Зменште розмір зображень або експортуйте дані.');
     return false;
   }
 }
@@ -203,7 +189,7 @@ function showToast(message) {
 
 function openImageDB() {
   return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) return reject(new Error('Цей браузер не підтримує IndexedDB.'));
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB не підтримується.'));
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
@@ -282,7 +268,7 @@ function addButtonContent(button, text, icon, imageId) {
   const label = document.createElement('span');
   label.textContent = text;
   button.appendChild(label);
-  if (editing) button.title = 'У режимі редагування натисніть, щоб змінити назву';
+  if (editing) button.title = 'Натисніть, щоб змінити назву';
 }
 function createMenuButton(text, icon, imageId, callback, extraClass = '', directTarget = null) {
   const button = document.createElement('button');
@@ -291,7 +277,7 @@ function createMenuButton(text, icon, imageId, callback, extraClass = '', direct
   addButtonContent(button, text, icon, imageId);
   button.addEventListener('click', () => {
     if (editing && directTarget) {
-      const next = prompt('Змінити підпис:', directTarget.getLabel());
+      const next = prompt('Змінити назву:', directTarget.getLabel());
       if (next !== null && next.trim()) {
         directTarget.setLabel(next.trim());
         saveConfig(false);
@@ -313,7 +299,7 @@ function renderAll() {
   document.documentElement.style.setProperty('--color-primary', config.primaryColor || '#005fa3');
   $('app-title').textContent = config.title;
   $('app-title').title = editing ? 'Натисніть, щоб змінити назву програми' : '';
-  document.title = config.title || 'Вибір тарифу';
+  document.title = config.title || 'Tarif Auswahl';
   document.body.classList.toggle('editing', editing);
   editModeButton.innerHTML = editing
     ? '<i class="fa-solid fa-eye" aria-hidden="true"></i><span>Перегляд</span>'
@@ -394,7 +380,7 @@ function renderTable(entry) {
     row.className = 'row';
     const label = document.createElement('div');
     label.className = 'label';
-    label.textContent = fieldDisplayName(field);
+    label.textContent = field;
     const valueEl = document.createElement('div');
     valueEl.className = 'value';
     valueEl.textContent = String(value);
@@ -439,8 +425,8 @@ function renameCategory(oldName, newName) {
   if (selectedCategory === oldName) selectedCategory = newName;
 }
 function editFieldName(oldName) {
-  const next = prompt('Змінити назву поля:', fieldDisplayName(oldName));
-  if (next === null || !next.trim() || next.trim() === fieldDisplayName(oldName) || next.trim() === oldName) return;
+  const next = prompt('Змінити назву поля:', oldName);
+  if (next === null || !next.trim() || next.trim() === oldName) return;
   const newName = next.trim();
   if (config.fields.includes(newName)) return showToast('Поле з такою назвою вже існує.');
   const index = config.fields.indexOf(oldName);
@@ -462,7 +448,7 @@ function editFieldName(oldName) {
   renderEditorIfOpen();
 }
 function editEntryValue(field, oldValue) {
-  const next = prompt(`Змінити значення поля «${fieldDisplayName(field)}»:`, oldValue);
+  const next = prompt(`Змінити значення поля «${field}»:`, oldValue);
   if (next === null) return;
   const category = config.categories[selectedCategory];
   const target = selectedSubIndex !== null && category?.subOptions?.[selectedSubIndex]
@@ -576,7 +562,7 @@ function renderItemEditor() {
     renderAll();
     renderEditorIfOpen();
   }, 'text', 'change'));
-  grid.appendChild(createField('Клас іконки Font Awesome (наприклад, fa-hospital)', category.icon || '', value => {
+  grid.appendChild(createField('Іконка Font Awesome (наприклад, fa-hospital)', category.icon || '', value => {
     category.icon = value.trim();
     saveConfig(false);
     renderAll();
@@ -589,7 +575,7 @@ function renderItemEditor() {
   const dataGrid = document.createElement('div');
   dataGrid.className = 'form-grid';
   config.fields.forEach(field => {
-    dataGrid.appendChild(createField(fieldDisplayName(field), category.data[field] ?? '', value => {
+    dataGrid.appendChild(createField(field, category.data[field] ?? '', value => {
       category.data[field] = value;
       saveConfig(false);
       if (selectedCategory === editorCategory && selectedSubIndex === null) renderTable(category.data);
@@ -633,7 +619,7 @@ function renderItemEditor() {
         saveConfig(false);
         if (selectedCategory === editorCategory) renderAll();
       }, 'text', 'change'));
-      grid.appendChild(createField('Клас іконки Font Awesome', option.icon || '', value => {
+      grid.appendChild(createField('Font-Awesome-Icon', option.icon || '', value => {
         option.icon = value.trim();
         saveConfig(false);
         renderAll();
@@ -733,13 +719,12 @@ function renderFieldEditor() {
     row.className = 'category-list-item';
     const input = document.createElement('input');
     input.className = 'inline-edit-input';
-    input.value = fieldDisplayName(field);
+    input.value = field;
     input.setAttribute('aria-label', `Назва поля ${index + 1}`);
     input.addEventListener('change', () => {
       const next = input.value.trim();
-      if (next === fieldDisplayName(field)) return;
       if (!next || (config.fields.includes(next) && next !== field)) {
-        input.value = fieldDisplayName(field);
+        input.value = field;
         return showToast('Назва поля порожня або вже використовується.');
       }
       if (next !== field) renameField(field, next);
@@ -881,7 +866,7 @@ $('app-title-input').addEventListener('input', event => {
   config.title = event.target.value;
   $('app-title').textContent = config.title;
   $('app-title').title = editing ? 'Натисніть, щоб змінити назву програми' : '';
-  document.title = config.title || 'Вибір тарифу';
+  document.title = config.title || 'Tarif Auswahl';
   saveConfig(false);
 });
 $('primary-color-input').addEventListener('input', event => {
@@ -908,7 +893,7 @@ $('export-button').addEventListener('click', async () => {
     showToast('Резервну копію експортовано.');
   } catch (error) {
     console.error(error);
-    showToast('Не вдалося експортувати дані.');
+    showToast('Не вдалося експортувати резервну копію.');
   }
 });
 $('import-button').addEventListener('click', () => $('import-file-input').click());
@@ -945,7 +930,7 @@ $('import-file-input').addEventListener('change', async event => {
     showToast('Резервну копію імпортовано.');
   } catch (error) {
     console.error(error);
-    showToast('Не вдалося імпортувати дані. Виберіть коректний файл резервної копії.');
+    showToast('Не вдалося імпортувати. Виберіть коректний файл резервної копії.');
   } finally {
     event.target.value = '';
   }
@@ -968,7 +953,7 @@ function init() {
   renderAll();
   // Keep old deployments functional: if browser doesn't support dialog, provide a clear fallback.
   if (typeof editorDialog.showModal !== 'function') {
-    editModeButton.addEventListener('click', () => showToast('Щоб відкрити редактор, скористайтеся актуальною версією браузера.'));
+    editModeButton.addEventListener('click', () => showToast('Щоб відкрити редактор, використовуйте сучасний браузер.'));
   }
 }
 init();

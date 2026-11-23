@@ -60,7 +60,7 @@ self.addEventListener('fetch', event => {
         const fallback = await caches.match('./index.html');
         if (fallback) return fallback;
       }
-      return new Response('Офлайн — цей ресурс недоступний.', {
+      return new Response('Offline – diese Ressource ist nicht verfügbar.', {
         status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
       });
     }
