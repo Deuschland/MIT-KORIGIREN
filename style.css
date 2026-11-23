@@ -226,25 +226,3 @@ hr { border: 0; border-top: 1px solid #e1e6e9; margin: 22px 0; }
 .fa-plus::before { content: "+"; }
 .fa-download::before { content: "↓"; }
 .fa-upload::before { content: "↑"; }
-
-
-/* Bottom-anchored edit controls; the main tariff interface remains German. */
-.edit-controls {
-  position: fixed;
-  left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  width: min(calc(100vw - 32px), 600px);
-  padding: 8px;
-  border-radius: 12px;
-  background: rgba(253,253,253,.96);
-  box-shadow: var(--shadow-md);
-}
-.edit-controls button { flex: 1 1 180px; }
-#reset-container { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 76px); }
-body { padding-bottom: 100px; }

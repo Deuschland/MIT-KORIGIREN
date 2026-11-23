@@ -152,7 +152,7 @@ function normaliseConfig(input) {
     for (const field of result.fields) if (!(field in c.data)) c.data[field] = '';
     if (Array.isArray(c.subOptions)) c.subOptions = c.subOptions.map(option => {
       const opt = option && typeof option === 'object' ? option : {};
-      opt.label = String(opt.label || 'Нова підопція');
+      opt.label = String(opt.label || 'Neue Unteroption');
       opt.icon = typeof opt.icon === 'string' ? opt.icon : '';
       return opt;
     });
@@ -171,12 +171,12 @@ function loadConfig() {
 function saveConfig(showMessage = true) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    if (showMessage) showToast('Зміни збережено на пристрої.');
-    $('save-status').textContent = 'Останнє збереження: ' + new Date().toLocaleTimeString('uk-UA');
+    if (showMessage) showToast('Änderungen lokal gespeichert.');
+    $('save-status').textContent = 'Zuletzt gespeichert: ' + new Date().toLocaleTimeString('de-DE');
     return true;
   } catch (error) {
     console.error(error);
-    showToast('Недостатньо місця. Зменште розмір зображень або експортуйте дані.');
+    showToast('Speicher voll. Bitte große Bilder reduzieren oder Daten exportieren.');
     return false;
   }
 }
@@ -189,7 +189,7 @@ function showToast(message) {
 
 function openImageDB() {
   return new Promise((resolve, reject) => {
-    if (!('indexedDB' in window)) return reject(new Error('IndexedDB не підтримується.'));
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB wird nicht unterstützt.'));
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
@@ -219,7 +219,7 @@ async function getImage(id) {
       req.onerror = () => { db.close(); reject(req.error); };
     });
   } catch (error) {
-    console.warn('Не вдалося завантажити зображення', error);
+    console.warn('Bild konnte nicht geladen werden', error);
     return null;
   }
 }
@@ -268,7 +268,7 @@ function addButtonContent(button, text, icon, imageId) {
   const label = document.createElement('span');
   label.textContent = text;
   button.appendChild(label);
-  if (editing) button.title = 'Натисніть, щоб змінити назву';
+  if (editing) button.title = 'Im Bearbeitungsmodus antippen, um den Namen zu ändern';
 }
 function createMenuButton(text, icon, imageId, callback, extraClass = '', directTarget = null) {
   const button = document.createElement('button');
@@ -277,7 +277,7 @@ function createMenuButton(text, icon, imageId, callback, extraClass = '', direct
   addButtonContent(button, text, icon, imageId);
   button.addEventListener('click', () => {
     if (editing && directTarget) {
-      const next = prompt('Змінити назву:', directTarget.getLabel());
+      const next = prompt('Beschriftung bearbeiten:', directTarget.getLabel());
       if (next !== null && next.trim()) {
         directTarget.setLabel(next.trim());
         saveConfig(false);
@@ -298,12 +298,12 @@ function clearContainers() {
 function renderAll() {
   document.documentElement.style.setProperty('--color-primary', config.primaryColor || '#005fa3');
   $('app-title').textContent = config.title;
-  $('app-title').title = editing ? 'Натисніть, щоб змінити назву програми' : '';
+  $('app-title').title = editing ? 'Antippen, um den App-Titel zu bearbeiten' : '';
   document.title = config.title || 'Tarif Auswahl';
   document.body.classList.toggle('editing', editing);
   editModeButton.innerHTML = editing
-    ? '<i class="fa-solid fa-eye" aria-hidden="true"></i><span>Перегляд</span>'
-    : '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><span>Редагувати</span>';
+    ? '<i class="fa-solid fa-eye" aria-hidden="true"></i><span>Ansicht</span>'
+    : '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i><span>Bearbeiten</span>';
   saveButton.hidden = !editing;
   editBanner.hidden = !editing;
   clearContainers();
@@ -387,8 +387,8 @@ function renderTable(entry) {
     if (field === config.fields[1] || field === config.fields[6]) valueEl.classList.add('highlight');
     if (field === config.fields[5] || field === config.fields[7]) valueEl.classList.add('gros');
     if (editing) {
-      label.title = 'Натисніть, щоб змінити назву поля';
-      valueEl.title = 'Натисніть, щоб змінити значення';
+      label.title = 'Antippen, um Feldnamen zu bearbeiten';
+      valueEl.title = 'Antippen, um Wert zu bearbeiten';
       label.addEventListener('click', () => editFieldName(field));
       valueEl.addEventListener('click', () => editEntryValue(field, String(value)));
     }
@@ -401,7 +401,7 @@ function renderTable(entry) {
   if (imageId) {
     const img = document.createElement('img');
     img.className = 'row-image';
-    img.alt = 'Додаткове зображення';
+    img.alt = 'Zusätzliches Bild';
     getImage(imageId).then(blob => { if (blob && img.isConnected) img.src = URL.createObjectURL(blob); });
     if (editing) img.addEventListener('click', () => chooseImage(selectedSubIndex !== null ? { type: 'option', category: selectedCategory, index: selectedSubIndex } : { type: 'category', category: selectedCategory }));
     table.appendChild(img);
@@ -416,7 +416,7 @@ function resetView() {
 function renameCategory(oldName, newName) {
   if (oldName === newName) return;
   if (config.categories[newName]) {
-    showToast('Категорія з такою назвою вже існує.');
+    showToast('Eine Kategorie mit diesem Namen existiert bereits.');
     return;
   }
   const ordered = {};
@@ -425,10 +425,10 @@ function renameCategory(oldName, newName) {
   if (selectedCategory === oldName) selectedCategory = newName;
 }
 function editFieldName(oldName) {
-  const next = prompt('Змінити назву поля:', oldName);
+  const next = prompt('Feldname bearbeiten:', oldName);
   if (next === null || !next.trim() || next.trim() === oldName) return;
   const newName = next.trim();
-  if (config.fields.includes(newName)) return showToast('Поле з такою назвою вже існує.');
+  if (config.fields.includes(newName)) return showToast('Dieser Feldname existiert bereits.');
   const index = config.fields.indexOf(oldName);
   if (index >= 0) config.fields[index] = newName;
   for (const category of Object.values(config.categories)) {
@@ -448,7 +448,7 @@ function editFieldName(oldName) {
   renderEditorIfOpen();
 }
 function editEntryValue(field, oldValue) {
-  const next = prompt(`Змінити значення поля «${field}»:`, oldValue);
+  const next = prompt(`Wert für „${field}“ bearbeiten:`, oldValue);
   if (next === null) return;
   const category = config.categories[selectedCategory];
   const target = selectedSubIndex !== null && category?.subOptions?.[selectedSubIndex]
@@ -509,13 +509,13 @@ function renderCategoryList() {
       editorCategory = name;
       renderEditorIfOpen();
     });
-    select.title = 'Вибрати категорію';
+    select.title = 'Kategorie auswählen';
     const up = createActionButton('↑', 'small-button', () => moveCategory(name, -1));
     up.disabled = index === 0;
-    up.setAttribute('aria-label', 'Перемістити категорію вгору');
+    up.setAttribute('aria-label', 'Kategorie nach oben');
     const down = createActionButton('↓', 'small-button', () => moveCategory(name, 1));
     down.disabled = index === names.length - 1;
-    down.setAttribute('aria-label', 'Перемістити категорію вниз');
+    down.setAttribute('aria-label', 'Kategorie nach unten');
     row.append(select, up, down);
     list.appendChild(row);
   });
@@ -537,22 +537,22 @@ function renderItemEditor() {
   const host = $('item-editor');
   host.replaceChildren();
   if (!editorCategory || !config.categories[editorCategory]) {
-    host.append('Спочатку виберіть категорію.');
+    host.append('Bitte zuerst eine Kategorie auswählen.');
     return;
   }
   const category = config.categories[editorCategory];
   const categoryCard = document.createElement('div');
   categoryCard.className = 'item-card';
   const title = document.createElement('h4');
-  title.textContent = 'Категорія: ' + editorCategory;
+  title.textContent = 'Kategorie: ' + editorCategory;
   categoryCard.appendChild(title);
   const grid = document.createElement('div');
   grid.className = 'form-grid';
-  grid.appendChild(createField('Назва / підпис', editorCategory, value => {
+  grid.appendChild(createField('Name / Beschriftung', editorCategory, value => {
     const clean = value.trim();
     if (!clean || clean === editorCategory) return;
     if (config.categories[clean]) {
-      showToast('Категорія з такою назвою вже існує.');
+      showToast('Eine Kategorie mit diesem Namen existiert bereits.');
       renderEditorIfOpen();
       return;
     }
@@ -562,15 +562,15 @@ function renderItemEditor() {
     renderAll();
     renderEditorIfOpen();
   }, 'text', 'change'));
-  grid.appendChild(createField('Іконка Font Awesome (наприклад, fa-hospital)', category.icon || '', value => {
+  grid.appendChild(createField('Font-Awesome-Icon (z. B. fa-hospital)', category.icon || '', value => {
     category.icon = value.trim();
     saveConfig(false);
     renderAll();
   }, 'text', 'change'));
   categoryCard.appendChild(grid);
-  categoryCard.appendChild(createImageControls(category, { type: 'category', category: editorCategory }, 'Зображення категорії'));
+  categoryCard.appendChild(createImageControls(category, { type: 'category', category: editorCategory }, 'Bild für Kategorie'));
   const dataHeading = document.createElement('h4');
-  dataHeading.textContent = 'Дані категорії';
+  dataHeading.textContent = 'Daten der Kategorie';
   categoryCard.appendChild(dataHeading);
   const dataGrid = document.createElement('div');
   dataGrid.className = 'form-grid';
@@ -587,11 +587,11 @@ function renderItemEditor() {
   const subHeading = document.createElement('div');
   subHeading.className = 'editor-section-heading';
   const h = document.createElement('h4');
-  h.textContent = 'Підопції';
+  h.textContent = 'Unteroptionen';
   subHeading.appendChild(h);
-  subHeading.appendChild(createActionButton('+ Додати підопцію', 'action-button', () => {
+  subHeading.appendChild(createActionButton('+ Unteroption', 'action-button', () => {
     if (!Array.isArray(category.subOptions)) category.subOptions = [];
-    const option = { label: 'Нова підопція', icon: '' };
+    const option = { label: 'Neue Unteroption', icon: '' };
     config.fields.forEach(field => option[field] = '');
     category.subOptions.push(option);
     saveConfig(false);
@@ -603,18 +603,18 @@ function renderItemEditor() {
   if (!Array.isArray(category.subOptions) || category.subOptions.length === 0) {
     const note = document.createElement('p');
     note.className = 'helper-text';
-    note.textContent = 'У цій категорії ще немає підопцій.';
+    note.textContent = 'Für diese Kategorie gibt es noch keine Unteroptionen.';
     host.appendChild(note);
   } else {
     category.subOptions.forEach((option, index) => {
       const card = document.createElement('div');
       card.className = 'item-card';
       const optionTitle = document.createElement('h4');
-      optionTitle.textContent = `Підопція ${index + 1}`;
+      optionTitle.textContent = `Unteroption ${index + 1}`;
       card.appendChild(optionTitle);
       const grid = document.createElement('div');
       grid.className = 'form-grid';
-      grid.appendChild(createField('Підпис', option.label, value => {
+      grid.appendChild(createField('Beschriftung', option.label, value => {
         option.label = value;
         saveConfig(false);
         if (selectedCategory === editorCategory) renderAll();
@@ -625,7 +625,7 @@ function renderItemEditor() {
         renderAll();
       }, 'text', 'change'));
       card.appendChild(grid);
-      card.appendChild(createImageControls(option, { type: 'option', category: editorCategory, index }, 'Зображення підопції'));
+      card.appendChild(createImageControls(option, { type: 'option', category: editorCategory, index }, 'Bild für Unteroption'));
       const optionData = document.createElement('div');
       optionData.className = 'form-grid';
       config.fields.forEach(field => {
@@ -640,14 +640,14 @@ function renderItemEditor() {
       actions.className = 'item-card-actions';
       actions.appendChild(createActionButton('↑', 'small-button', () => moveOption(editorCategory, index, -1)));
       actions.appendChild(createActionButton('↓', 'small-button', () => moveOption(editorCategory, index, 1)));
-      actions.appendChild(createActionButton('Показати як вибір', 'small-button', () => {
+      actions.appendChild(createActionButton('Als Auswahl anzeigen', 'small-button', () => {
         selectedCategory = editorCategory;
         selectedSubIndex = index;
         renderAll();
         renderTable(mergeEntry(category, option));
       }));
-      actions.appendChild(createActionButton('Видалити підопцію', 'small-button danger', () => {
-        if (!confirm(`Видалити підопцію «${option.label}»?`)) return;
+      actions.appendChild(createActionButton('Unteroption löschen', 'small-button danger', () => {
+        if (!confirm(`Unteroption „${option.label}“ löschen?`)) return;
         category.subOptions.splice(index, 1);
         if (selectedCategory === editorCategory) selectedSubIndex = null;
         saveConfig(false);
@@ -658,9 +658,9 @@ function renderItemEditor() {
       host.appendChild(card);
     });
   }
-  const deleteCategory = createActionButton('Видалити категорію', 'danger-button', () => {
-    if (Object.keys(config.categories).length <= 1) return showToast('Має залишитися щонайменше одна категорія.');
-    if (!confirm(`Справді видалити категорію «${editorCategory}»?`)) return;
+  const deleteCategory = createActionButton('Kategorie löschen', 'danger-button', () => {
+    if (Object.keys(config.categories).length <= 1) return showToast('Mindestens eine Kategorie muss vorhanden sein.');
+    if (!confirm(`Kategorie „${editorCategory}“ wirklich löschen?`)) return;
     const old = editorCategory;
     delete config.categories[old];
     if (selectedCategory === old) { selectedCategory = null; selectedSubIndex = null; }
@@ -680,20 +680,20 @@ function createImageControls(object, target, labelText) {
   if (object.imageId) {
     const img = document.createElement('img');
     img.className = 'image-preview';
-    img.alt = 'Попередній перегляд зображення';
+    img.alt = 'Bildvorschau';
     getImage(object.imageId).then(blob => { if (blob && img.isConnected) img.src = URL.createObjectURL(blob); });
     wrap.appendChild(img);
-    wrap.appendChild(createActionButton('Замінити зображення', 'small-button', () => chooseImage(target)));
-    wrap.appendChild(createActionButton('Видалити зображення', 'small-button danger', async () => {
+    wrap.appendChild(createActionButton('Bild ersetzen', 'small-button', () => chooseImage(target)));
+    wrap.appendChild(createActionButton('Bild löschen', 'small-button danger', async () => {
       await deleteImage(object.imageId);
       delete object.imageId;
       saveConfig(false);
       renderAll();
       renderEditorIfOpen();
-      showToast('Зображення видалено.');
+      showToast('Bild gelöscht.');
     }));
   } else {
-    wrap.appendChild(createActionButton('Додати зображення', 'small-button', () => chooseImage(target)));
+    wrap.appendChild(createActionButton('Bild hinzufügen', 'small-button', () => chooseImage(target)));
   }
   return wrap;
 }
@@ -720,12 +720,12 @@ function renderFieldEditor() {
     const input = document.createElement('input');
     input.className = 'inline-edit-input';
     input.value = field;
-    input.setAttribute('aria-label', `Назва поля ${index + 1}`);
+    input.setAttribute('aria-label', `Feldname ${index + 1}`);
     input.addEventListener('change', () => {
       const next = input.value.trim();
       if (!next || (config.fields.includes(next) && next !== field)) {
         input.value = field;
-        return showToast('Назва поля порожня або вже використовується.');
+        return showToast('Feldname leer oder bereits vorhanden.');
       }
       if (next !== field) renameField(field, next);
     });
@@ -736,10 +736,10 @@ function renderFieldEditor() {
     row.append(input, up, down);
     host.appendChild(row);
   });
-  host.appendChild(createActionButton('+ Додати поле', 'action-button', () => {
-    let name = 'Нове поле';
+  host.appendChild(createActionButton('+ Feld hinzufügen', 'action-button', () => {
+    let name = 'Neues Feld';
     let n = 2;
-    while (config.fields.includes(name)) name = `Нове поле ${n++}`;
+    while (config.fields.includes(name)) name = `Neues Feld ${n++}`;
     config.fields.push(name);
     Object.values(config.categories).forEach(category => {
       category.data[name] = '';
@@ -787,8 +787,8 @@ function chooseImage(target) {
 imageFileInput.addEventListener('change', async () => {
   const file = imageFileInput.files?.[0];
   if (!file || !currentImageTarget) return;
-  if (!file.type.startsWith('image/')) return showToast('Виберіть файл зображення.');
-  if (file.size > 12 * 1024 * 1024) return showToast('Зображення завелике (максимум 12 МБ).');
+  if (!file.type.startsWith('image/')) return showToast('Bitte eine Bilddatei auswählen.');
+  if (file.size > 12 * 1024 * 1024) return showToast('Das Bild ist zu groß (max. 12 MB).');
   const object = getImageTarget(currentImageTarget);
   if (!object) return;
   const previousId = object.imageId;
@@ -800,10 +800,10 @@ imageFileInput.addEventListener('change', async () => {
     saveConfig(false);
     renderAll();
     renderEditorIfOpen();
-    showToast('Зображення збережено.');
+    showToast('Bild gespeichert.');
   } catch (error) {
     console.error(error);
-    showToast('Не вдалося зберегти зображення.');
+    showToast('Bild konnte nicht gespeichert werden.');
   } finally {
     currentImageTarget = null;
   }
@@ -816,9 +816,9 @@ function getImageTarget(target) {
 }
 
 $('add-category-button').addEventListener('click', () => {
-  let name = 'Нова категорія';
+  let name = 'Neue Kategorie';
   let i = 2;
-  while (config.categories[name]) name = `Нова категорія ${i++}`;
+  while (config.categories[name]) name = `Neue Kategorie ${i++}`;
   config.categories[name] = { icon: 'fa-folder', data: Object.fromEntries(config.fields.map(field => [field, ''])) };
   editorCategory = name;
   selectedCategory = null;
@@ -836,7 +836,7 @@ editModeButton.addEventListener('click', () => {
     openEditor();
   } else {
     renderAll();
-    showToast('Режим перегляду увімкнено.');
+    showToast('Ansichtsmodus aktiviert.');
   }
 });
 saveButton.addEventListener('click', () => saveConfig(true));
@@ -846,7 +846,7 @@ $('done-editor-button').addEventListener('click', () => {
   saveConfig(false);
   editorDialog.close();
   renderAll();
-  showToast('Зміни збережено.');
+  showToast('Änderungen gespeichert.');
 });
 function openEditor() {
   if (!editorCategory) editorCategory = selectedCategory || Object.keys(config.categories)[0] || null;
@@ -865,7 +865,7 @@ document.querySelectorAll('[data-editor-tab]').forEach(button => {
 $('app-title-input').addEventListener('input', event => {
   config.title = event.target.value;
   $('app-title').textContent = config.title;
-  $('app-title').title = editing ? 'Натисніть, щоб змінити назву програми' : '';
+  $('app-title').title = editing ? 'Antippen, um den App-Titel zu bearbeiten' : '';
   document.title = config.title || 'Tarif Auswahl';
   saveConfig(false);
 });
@@ -890,10 +890,10 @@ $('export-button').addEventListener('click', async () => {
     anchor.download = 'tarif-auswahl-backup.json';
     anchor.click();
     URL.revokeObjectURL(url);
-    showToast('Резервну копію експортовано.');
+    showToast('Backup exportiert.');
   } catch (error) {
     console.error(error);
-    showToast('Не вдалося експортувати резервну копію.');
+    showToast('Export fehlgeschlagen.');
   }
 });
 $('import-button').addEventListener('click', () => $('import-file-input').click());
@@ -927,16 +927,16 @@ $('import-file-input').addEventListener('change', async event => {
     saveConfig(false);
     renderAll();
     renderEditorIfOpen();
-    showToast('Резервну копію імпортовано.');
+    showToast('Backup importiert.');
   } catch (error) {
     console.error(error);
-    showToast('Не вдалося імпортувати. Виберіть коректний файл резервної копії.');
+    showToast('Import fehlgeschlagen. Bitte eine gültige Backup-Datei wählen.');
   } finally {
     event.target.value = '';
   }
 });
 $('restore-defaults-button').addEventListener('click', async () => {
-  if (!confirm('Справді скасувати всі локальні зміни та відновити початкові дані?')) return;
+  if (!confirm('Alle lokalen Änderungen wirklich verwerfen und die ursprünglichen Daten wiederherstellen?')) return;
   config = defaultConfig();
   selectedCategory = null;
   selectedSubIndex = null;
@@ -944,7 +944,7 @@ $('restore-defaults-button').addEventListener('click', async () => {
   saveConfig(false);
   renderAll();
   renderEditorIfOpen();
-  showToast('Початкові налаштування відновлено.');
+  showToast('Werkseinstellungen wiederhergestellt.');
 });
 
 function init() {
@@ -953,7 +953,7 @@ function init() {
   renderAll();
   // Keep old deployments functional: if browser doesn't support dialog, provide a clear fallback.
   if (typeof editorDialog.showModal !== 'function') {
-    editModeButton.addEventListener('click', () => showToast('Щоб відкрити редактор, використовуйте сучасний браузер.'));
+    editModeButton.addEventListener('click', () => showToast('Bitte einen aktuellen Browser verwenden, um den Editor zu öffnen.'));
   }
 }
 init();

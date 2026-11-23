@@ -13,14 +13,24 @@
 <body>
   <header class="app-header">
     <h1 id="app-title">Tarif Auswahl</h1>
+    <div class="header-actions">
+      <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
+        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+        <span>Bearbeiten</span>
+      </button>
+      <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        <span>Speichern</span>
+      </button>
+    </div>
   </header>
 
   <main>
     <div id="edit-banner" class="edit-banner" hidden>
-      <strong>Режим редагування</strong>
-      <span>Натисніть на елемент, щоб змінити його, або відкрийте налаштування.</span>
+      <strong>Bearbeitungsmodus</strong>
+      <span>Element antippen, um es direkt zu bearbeiten, oder die Einstellungen öffnen.</span>
       <button id="open-editor-button" class="toolbar-button" type="button">
-        <i class="fa-solid fa-sliders" aria-hidden="true"></i> Налаштування
+        <i class="fa-solid fa-sliders" aria-hidden="true"></i> Einstellungen
       </button>
     </div>
 
@@ -33,80 +43,69 @@
     <section id="output" aria-label="Details"></section>
   </main>
 
-  <div id="edit-controls" class="edit-controls" aria-label="Керування редагуванням">
-    <button id="edit-mode-button" class="toolbar-button primary-toolbar-button" type="button">
-      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-      <span>Редагувати</span>
-    </button>
-    <button id="save-button" class="toolbar-button primary-toolbar-button" type="button" hidden>
-      <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
-      <span>Зберегти</span>
-    </button>
-  </div>
-
   <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title">
     <div class="dialog-header">
-      <h2 id="editor-title">Налаштування</h2>
-      <button id="close-editor-button" class="icon-only-button" type="button" aria-label="Закрити">
+      <h2 id="editor-title">Einstellungen</h2>
+      <button id="close-editor-button" class="icon-only-button" type="button" aria-label="Schließen">
         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
       </button>
     </div>
     <div class="editor-layout">
-      <nav class="editor-nav" aria-label="Розділи редагування">
-        <button type="button" class="editor-nav-button active" data-editor-tab="content">Меню та дані</button>
-        <button type="button" class="editor-nav-button" data-editor-tab="fields">Назви полів</button>
-        <button type="button" class="editor-nav-button" data-editor-tab="appearance">Назва та вигляд</button>
-        <button type="button" class="editor-nav-button" data-editor-tab="backup">Резервна копія</button>
+      <nav class="editor-nav" aria-label="Bearbeitungsbereiche">
+        <button type="button" class="editor-nav-button active" data-editor-tab="content">Menü & Daten</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="fields">Feldnamen</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="appearance">Titel & Darstellung</button>
+        <button type="button" class="editor-nav-button" data-editor-tab="backup">Sicherung</button>
       </nav>
       <div class="editor-content">
         <section class="editor-tab" data-editor-panel="content">
           <div class="editor-section-heading">
-            <h3>Категорії</h3>
-            <button id="add-category-button" class="action-button" type="button"><i class="fa-solid fa-plus"></i> Додати категорію</button>
+            <h3>Kategorien</h3>
+            <button id="add-category-button" class="action-button" type="button"><i class="fa-solid fa-plus"></i> Kategorie hinzufügen</button>
           </div>
           <div id="category-editor-list" class="editor-list"></div>
           <hr>
           <div class="editor-section-heading">
-            <h3>Вибрана категорія / підопція</h3>
+            <h3>Ausgewählte Kategorie / Unteroption</h3>
           </div>
-          <p class="helper-text">Виберіть категорію, щоб редагувати дані, підопції, підписи та зображення.</p>
+          <p class="helper-text">Kategorie auswählen, um Daten, Unteroptionen, Beschriftungen und Bilder zu bearbeiten.</p>
           <div id="item-editor"></div>
         </section>
 
         <section class="editor-tab" data-editor-panel="fields" hidden>
-          <h3>Редагування назв полів</h3>
-          <p class="helper-text">Назви полів відображаються в деталях. Наявні значення залишаться без змін.</p>
+          <h3>Feldnamen bearbeiten</h3>
+          <p class="helper-text">Die Feldnamen werden in der Detailansicht verwendet. Bestehende Werte bleiben erhalten.</p>
           <div id="field-editor-list" class="form-grid"></div>
         </section>
 
         <section class="editor-tab" data-editor-panel="appearance" hidden>
-          <h3>Назва програми</h3>
-          <label class="form-field">Назва
+          <h3>App-Titel</h3>
+          <label class="form-field">Titel
             <input id="app-title-input" type="text" maxlength="100">
           </label>
-          <h3>Оформлення</h3>
-          <label class="form-field">Основний колір
+          <h3>Darstellung</h3>
+          <label class="form-field">Primärfarbe
             <input id="primary-color-input" type="color" value="#005fa3">
           </label>
-          <p class="helper-text">Кольори зберігаються на цьому пристрої.</p>
+          <p class="helper-text">Die Farben werden lokal auf diesem Gerät gespeichert.</p>
         </section>
 
         <section class="editor-tab" data-editor-panel="backup" hidden>
-          <h3>Резервне копіювання даних</h3>
-          <p class="helper-text">Експортуйте категорії, тексти та налаштування у файл JSON. Зображення також додаються до резервної копії, якщо це дозволяє її розмір.</p>
+          <h3>Lokale Daten sichern</h3>
+          <p class="helper-text">Exportiere Kategorien, Texte und Einstellungen als JSON-Datei. Bilder werden separat in dieser Datei als Daten-URLs mitgesichert, wenn der Exportumfang es zulässt.</p>
           <div class="button-row">
-            <button id="export-button" class="action-button" type="button"><i class="fa-solid fa-download"></i> Експортувати</button>
-            <button id="import-button" class="action-button" type="button"><i class="fa-solid fa-upload"></i> Імпортувати JSON</button>
+            <button id="export-button" class="action-button" type="button"><i class="fa-solid fa-download"></i> Exportieren</button>
+            <button id="import-button" class="action-button" type="button"><i class="fa-solid fa-upload"></i> JSON importieren</button>
             <input id="import-file-input" type="file" accept="application/json,.json" hidden>
           </div>
-          <button id="restore-defaults-button" class="danger-button" type="button"> Відновити початкові налаштування</button>
-          <p class="warning-text">Увага: відновлення замінить усі дані, які ви редагували на цьому пристрої.</p>
+          <button id="restore-defaults-button" class="danger-button" type="button">Werkseinstellungen wiederherstellen</button>
+          <p class="warning-text">Achtung: Das Wiederherstellen ersetzt deine lokal bearbeiteten Daten.</p>
         </section>
       </div>
     </div>
     <div class="dialog-footer">
-      <span id="save-status" role="status" aria-live="polite">Зміни зберігаються на пристрої.</span>
-      <button id="done-editor-button" class="toolbar-button primary-toolbar-button" type="button">Готово</button>
+      <span id="save-status" role="status" aria-live="polite">Änderungen werden lokal gespeichert.</span>
+      <button id="done-editor-button" class="toolbar-button primary-toolbar-button" type="button">Fertig</button>
     </div>
   </dialog>
 
