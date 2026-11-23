@@ -1,42 +1,75 @@
-const CACHE_NAME = 'tarif-cache-v4';
-const APP_SHELL = [
-  './',
+const CACHE_NAME = 'tarif-cache-v2';
+const FILES_TO_CACHE = [
   './index.html',
   './style.css',
   './script.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
+// Встановлення Service Worker і кешування файлів
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
+  self.skipWaiting();
 });
 
+// Активація: очищення старих кешів
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key.startsWith('tarif-cache-') && key !== CACHE_NAME).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
   );
+  self.clients.claim();
 });
 
+// Обробка запитів
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
   const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
+
+  // Пропускаємо запити до розширень Chrome
+  if (url.protocol === 'chrome-extension:') return;
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      const network = fetch(event.request).then(response => {
-        if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+    caches.match(event.request).then(cachedResponse => {
+      // Якщо є кеш — повертаємо його
+      if (cachedResponse) return cachedResponse;
+
+      // Інакше пробуємо отримати з мережі
+      return fetch(event.request).then(networkResponse => {
+        // Перевірка: кешуємо лише локальні ресурси
+        if (
+          !networkResponse ||
+          networkResponse.status !== 200 ||
+          networkResponse.type !== 'basic' ||
+          !event.request.url.startsWith(self.location.origin)
+        ) {
+          return networkResponse;
         }
-        return response;
+
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+
+        return networkResponse;
+      }).catch(() => {
+        // Якщо мережа недоступна — показуємо offline.html
+        return caches.match('./offline.html');
       });
-      return cached || network;
     })
   );
 });
